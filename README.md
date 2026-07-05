@@ -12,6 +12,7 @@ Dependency Injection
 PostgreSQL (в процессе интеграции)
 Entity Framework Core (планируется)
 Git
+
 📌 Реализовано
 CRUD API для товаров
 REST-маршрутизация
