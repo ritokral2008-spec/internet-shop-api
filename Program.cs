@@ -1,42 +1,29 @@
-using InternetShop.Models;
+using InternetShop.Data;
 using InternetShop.Repositories;
 using InternetShop.Services;
-
-var productRepository = new ProductRepository();
-var orderRepository = new OrderRepository();
-
-var paymentService = new PaymentService();
-
-var warehouseService = new WarehouseService(productRepository);
-
-var emailService = new EmailService();
-
-var analyticsService = new AnalyticsService();
-
-var orderService = new OrderService(
-    orderRepository,
-    warehouseService,
-    paymentService);
+using InternetShop.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IProductRepository<Product>, ProductRepository>();
+builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
-builder.Services.AddSingleton<IProductService<Product>, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
-
-
-orderService.OrderCreated += emailService.SendEmail;
-orderService.OrderCreated += analyticsService.AddOrderToStatistics;
 
 if(app.Environment.IsDevelopment())
 {

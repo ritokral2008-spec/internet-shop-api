@@ -1,9 +1,8 @@
-﻿using InternetShop.DTOs;
+﻿using InternetShop.Data;
+using InternetShop.DTOs;
 using InternetShop.Models;
-using InternetShop.Services;
+using InternetShop.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace InternetShop.Controllers
 {
@@ -11,29 +10,29 @@ namespace InternetShop.Controllers
     [ApiController]
     public class ProductsController: ControllerBase
     {
-        private readonly IProductService<Product> _service;
+        private readonly IProductService _service;
 
         public ProductsController(
-            IProductService<Product> service)
+            IProductService service)
         {
             _service = service;
         }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_service.GetAll());
+            var result = await _service.GetAll();
+            return Ok(result);
         }
 
-        // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return Ok(_service.GetById(id));
+            var result = await _service.GetById(id);
+            return Ok(result);
         }
 
-        // POST api/<ValuesController>
         [HttpPost]
-        public IActionResult Post(ProductDto dto)
+        public async Task<IActionResult> Post(ProductDto dto)
         {
             var product = new Product
             {
@@ -42,14 +41,13 @@ namespace InternetShop.Controllers
                 Stock = dto.Stock
             };
 
-            _service.Add(product);
+            await _service.Add(product);
 
             return Created("", product);
         }
 
-        // PUT api/<ValuesController>/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, ProductDto dto)
+        public async Task<IActionResult> Put(int id, ProductDto dto)
         {
             var product = new Product
             {
@@ -58,16 +56,15 @@ namespace InternetShop.Controllers
                 Stock = dto.Stock
             };
 
-            _service.Update(id, product);
+            await _service.Update(id, product);
 
             return Ok();
         }
 
-        // DELETE api/<ValuesController>/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _service.Remove(id);
+            await _service.Remove(id);
 
             return NoContent();
         }

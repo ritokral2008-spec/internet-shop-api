@@ -1,29 +1,33 @@
 ﻿using InternetShop.Models;
 using InternetShop.Exceptions;
-using InternetShop.Services;
+using InternetShop.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternetShop.Repositories
 {
-    public class ProductRepository: IProductRepository<Product>
+    public class ProductRepository: IProductRepository
     {
-        private readonly List<Product> products = new();
-        int id = 1;
+        private readonly AppDbContext _context;
 
-        public void Add(Product product)
+        public ProductRepository(AppDbContext context)
         {
-            product.Id = id;
-            products.Add(product);
-            id++;
+            _context = context;
         }
 
-        public async Task<IEnumerable<Product?>> GetAll()
+        public async Task Add(Product product)
         {
-            return products;
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetAll()
+        {
+            return await _context.Products.ToListAsync();
         }
 
         public async Task<Product> GetById(int id)
         {
-            var product = products.FirstOrDefault(x => x.Id == id);
+            var product = await _context.Products.FindAsync(id);
 
             if(product == null)
                 throw new ProductNotFoundException("Товар не найден");
@@ -31,18 +35,20 @@ namespace InternetShop.Repositories
             return product;
         }
 
-        public void Remove(int id)
+        public async Task Remove(int id)
         {
-            var product = products.FirstOrDefault(x => x.Id == id);
+            var product = await _context.Products.FindAsync(id);
 
             if(product == null)
                 throw new ProductNotFoundException("Товар не найден");
 
-            products.Remove(product);
+            _context.Products.Remove(product);
+
+            await _context.SaveChangesAsync();
         }
-        public void Update(int id, Product product)
+        public async Task Update(int id, Product product)
         {
-            var existing = products.FirstOrDefault(x => x.Id == id);
+            var existing = await _context.Products.FindAsync(id);
 
             if(existing == null)
                 throw new ProductNotFoundException("Товар не найден");
@@ -51,6 +57,7 @@ namespace InternetShop.Repositories
             existing.Price = product.Price;
             existing.Stock = product.Stock;
 
+            await _context.SaveChangesAsync();
         }
     }
 }

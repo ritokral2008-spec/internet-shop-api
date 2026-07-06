@@ -1,17 +1,23 @@
 ﻿using InternetShop.Repositories;
 using InternetShop.Models;
 using InternetShop.Exceptions;
+using InternetShop.Services.Interfaces;
+using InternetShop.Data;
 
 namespace InternetShop.Services
 {
-    public class WarehouseService
+    public class WarehouseService: IWarehouseService
     {
-        private readonly IRepository<Product> productRepository;
-        public WarehouseService(IRepository<Product> productRepository)
+        private readonly AppDbContext _context;
+        private readonly IProductRepository productRepository;
+        public WarehouseService(
+            AppDbContext context,
+            IProductRepository productRepository)
         {
+            _context = context;
             this.productRepository = productRepository;
         }
-        public async void UpdateRepository(Order order)
+        public async Task UpdateRepository(Order order)
         {
             foreach(var orderProduct in order.Products)
             {
@@ -24,6 +30,8 @@ namespace InternetShop.Services
                     throw new NotEnoughStockException("Недостаточно товара на складе");
 
                 product.Stock -= orderProduct.Quantity;
+
+                await _context.SaveChangesAsync();
             }
         }
     }

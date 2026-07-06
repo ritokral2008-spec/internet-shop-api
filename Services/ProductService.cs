@@ -1,22 +1,23 @@
 ﻿using InternetShop.Models;
 using InternetShop.Repositories;
+using InternetShop.Services.Interfaces;
 
 namespace InternetShop.Services
 {
-    public class ProductService: IProductService<Product>
+    public class ProductService: IProductService
     {
-        private readonly IProductRepository<Product> repository;
+        private readonly IProductRepository repository;
 
-        public ProductService(IProductRepository<Product> repository)
+        public ProductService(IProductRepository repository)
         {
             this.repository = repository;
         }
-        public void Add(Product product)
+        public async Task Add(Product product)
         {
-            repository.Add(product);
+            await repository.Add(product);
         }
 
-        public async Task<IEnumerable<Product?>> GetAll()
+        public async Task<IEnumerable<Product>> GetAll()
         {
             return await repository.GetAll();
         }
@@ -26,13 +27,13 @@ namespace InternetShop.Services
             return await repository.GetById(id);
         }
 
-        public void Remove(int id)
+        public async Task Remove(int id)
         {
-            repository.Remove(id);
+            await repository.Remove(id);
         }
         public async Task Update(int id, Product product)
         {
-            repository.Update(id, product);   
+            await repository.Update(id, product);   
         }
     }
 }

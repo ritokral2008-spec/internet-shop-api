@@ -1,24 +1,31 @@
-﻿using InternetShop.Models;
+﻿using InternetShop.Data;
+using InternetShop.Models;
 using System.ComponentModel.Design.Serialization;
 
 namespace InternetShop.Repositories
 {
-    public class OrderRepository: IRepository<Order>
+    public class OrderRepository: IOrderRepository
     {
-        private readonly List<Order> orders = new();
-        public void Add(Order order)
+        private readonly AppDbContext _context;
+
+        public OrderRepository(AppDbContext context)
         {
-            orders.Add(order);
+            _context = context;
+        }
+        public async Task Add(Order order)
+        {
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Order?>> GetAll()
+        public async Task<IEnumerable<Order>> GetAll()
         {
-            return orders;
+            return _context.Orders.ToList();
         }
 
         public async Task<Order> GetById(int id)
         {
-            var order = orders.FirstOrDefault(x => x.Id == id);
+            var order = await _context.Orders.FindAsync(id);
 
             if(order == null)
                 throw new Exception("Заказ не найден");
@@ -26,14 +33,14 @@ namespace InternetShop.Repositories
             return order;
         }
 
-        public void Remove(int id)
+        public async Task Remove(int id)
         {
-            var order = orders.FirstOrDefault(x => x.Id == id);
+            var order = await _context.Orders.FindAsync(id);
 
             if(order == null)
                 return;
 
-            orders.Remove(order);
+            _context.Orders.Remove(order);
         }
     }
 }

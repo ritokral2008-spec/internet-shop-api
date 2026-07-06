@@ -1,10 +1,10 @@
 ﻿namespace InternetShop.Models
 {
-    public class Product
+    public class User
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public decimal Price { get; set; }
-        public int Stock { get; set; }
+        public int Age { get; set; }
+        public required string City { get; set; }
     }
 }

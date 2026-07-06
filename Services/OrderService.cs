@@ -1,20 +1,21 @@
 ﻿using InternetShop.Models;
 using InternetShop.Repositories;
 using InternetShop.Exceptions;
+using InternetShop.Services.Interfaces;
 
 namespace InternetShop.Services
 {
-    public class OrderService: IOrderService<Order>
+    public class OrderService: IOrderService
     {
-        private readonly IRepository<Order> orderRepository;
-        private readonly WarehouseService warehouseService;
-        private readonly PaymentService paymentService;
+        private readonly IOrderRepository orderRepository;
+        private readonly IWarehouseService warehouseService;
+        private readonly IPaymentService paymentService;
         public event Action<Order>? OrderCreated;
 
         public OrderService(
-            IRepository<Order> orderRepository,
-            WarehouseService warehouseService,
-            PaymentService paymentService)
+            IOrderRepository orderRepository,
+            IWarehouseService warehouseService,
+            IPaymentService paymentService)
         {
             this.orderRepository = orderRepository;
             this.warehouseService = warehouseService;
@@ -27,19 +28,19 @@ namespace InternetShop.Services
 
             warehouseService.UpdateRepository(order);
 
-            orderRepository.Add(order);
+            await orderRepository.Add(order);
 
             OrderCreated?.Invoke(order);
         }
 
-        public Task<IEnumerable<Order?>> GetAll()
+        public async Task<IEnumerable<Order>> GetAll()
         {
-            return orderRepository.GetAll();
+            return await orderRepository.GetAll();
         }
 
-        public Task<Order> GetById(int id)
+        public async Task<Order> GetById(int id)
         {
-            return orderRepository.GetById(id);
+            return await orderRepository.GetById(id);
         }
 
         public void Remove(int id)

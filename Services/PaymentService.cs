@@ -1,8 +1,9 @@
 ﻿using InternetShop.Models;
+using InternetShop.Services.Interfaces;
 
 namespace InternetShop.Services
 {
-    public class PaymentService
+    public class PaymentService: IPaymentService
     {
         public async Task<bool> PayAsync(Order order)
         {

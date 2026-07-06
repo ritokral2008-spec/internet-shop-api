@@ -1,10 +1,8 @@
 ﻿namespace InternetShop.Models
 {
-    public class Product
+    public class Category
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public decimal Price { get; set; }
-        public int Stock { get; set; }
     }
 }
