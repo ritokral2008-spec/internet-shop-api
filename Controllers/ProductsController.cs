@@ -32,7 +32,7 @@ namespace InternetShop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(ProductDto dto)
+        public async Task<IActionResult> Post(CreateProductDto dto)
         {
             var product = new Product
             {
@@ -43,11 +43,22 @@ namespace InternetShop.Controllers
 
             await _service.Add(product);
 
-            return Created("", product);
+            var response = new ResponseProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock
+            };
+
+            return CreatedAtAction(
+                nameof(Get),
+                new { id = product.Id },
+                response);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, ProductDto dto)
+        public async Task<IActionResult> Put(int id, UpdateProductDto dto)
         {
             var product = new Product
             {
@@ -58,7 +69,16 @@ namespace InternetShop.Controllers
 
             await _service.Update(id, product);
 
-            return Ok();
+            var response = new ResponseProductDto
+            {
+                Id = id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock
+            };
+
+            return Ok(
+                response);
         }
 
         [HttpDelete("{id}")]
