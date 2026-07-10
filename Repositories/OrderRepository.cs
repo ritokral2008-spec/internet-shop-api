@@ -1,6 +1,6 @@
 ﻿using InternetShop.Data;
 using InternetShop.Models;
-using System.ComponentModel.Design.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternetShop.Repositories
 {
@@ -20,12 +20,18 @@ namespace InternetShop.Repositories
 
         public async Task<IEnumerable<Order>> GetAll()
         {
-            return _context.Orders.ToList();
+            return _context.Orders
+                .Include(o => o.Items)
+                .ThenInclude(i => i.Product)
+                .ToList();
         }
 
         public async Task<Order> GetById(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .Include(o => o.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
             if(order == null)
                 throw new Exception("Заказ не найден");
@@ -41,6 +47,13 @@ namespace InternetShop.Repositories
                 return;
 
             _context.Orders.Remove(order);
+
+            await _context.SaveChangesAsync();
+        }
+        public async Task Update(Order order)
+        {
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
         }
     }
 }

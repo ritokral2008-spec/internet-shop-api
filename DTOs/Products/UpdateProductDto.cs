@@ -1,6 +1,6 @@
-﻿namespace InternetShop.DTOs
+﻿namespace InternetShop.DTOs.Products
 {
-    public class CreateProductDto
+    public class UpdateProductDto
     {
         public required string Name { get; set; }
         public decimal Price { get; set; }

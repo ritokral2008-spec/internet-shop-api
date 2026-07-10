@@ -1,4 +1,4 @@
-﻿namespace InternetShop.DTOs
+﻿namespace InternetShop.DTOs.Products
 {
     public class ResponseProductDto
     {

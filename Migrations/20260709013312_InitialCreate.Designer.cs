@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InternetShop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260706033118_InitialCreate")]
+    [Migration("20260709013312_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -50,6 +50,12 @@ namespace InternetShop.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
+
                     b.HasKey("Id");
 
                     b.ToTable("Orders");
@@ -63,7 +69,7 @@ namespace InternetShop.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProductId")
@@ -71,6 +77,9 @@ namespace InternetShop.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -130,9 +139,11 @@ namespace InternetShop.Migrations
 
             modelBuilder.Entity("InternetShop.Models.OrderItem", b =>
                 {
-                    b.HasOne("InternetShop.Models.Order", null)
-                        .WithMany("Products")
-                        .HasForeignKey("OrderId");
+                    b.HasOne("InternetShop.Models.Order", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("InternetShop.Models.Product", "Product")
                         .WithMany()
@@ -140,12 +151,14 @@ namespace InternetShop.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Order");
+
                     b.Navigation("Product");
                 });
 
             modelBuilder.Entity("InternetShop.Models.Order", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

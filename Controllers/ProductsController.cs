@@ -1,5 +1,6 @@
 ﻿using InternetShop.Data;
 using InternetShop.DTOs;
+using InternetShop.DTOs.Products;
 using InternetShop.Models;
 using InternetShop.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;

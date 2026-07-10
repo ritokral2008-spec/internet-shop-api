@@ -19,7 +19,7 @@ namespace InternetShop.Services
         }
         public async Task UpdateRepository(Order order)
         {
-            foreach(var orderProduct in order.Products)
+            foreach(var orderProduct in order.Items)
             {
                 var product = await productRepository.GetById(orderProduct.ProductId);
 
