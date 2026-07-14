@@ -1,6 +1,6 @@
 ﻿using InternetShop.Models;
 
-namespace InternetShop.Repositories
+namespace InternetShop.Repositories.Interfaces
 {
     public interface IOrderRepository
     {

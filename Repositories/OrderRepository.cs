@@ -1,5 +1,7 @@
 ﻿using InternetShop.Data;
+using InternetShop.Exceptions;
 using InternetShop.Models;
+using InternetShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternetShop.Repositories
@@ -34,7 +36,7 @@ namespace InternetShop.Repositories
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if(order == null)
-                throw new Exception("Заказ не найден");
+                throw new OrderNotFoundException("Заказ не найден");
 
             return order;
         }

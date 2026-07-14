@@ -1,39 +1,117 @@
-﻿using InternetShop.Models;
-using InternetShop.Repositories;
+﻿using InternetShop.DTOs.Products;
+using InternetShop.Models;
+using InternetShop.Repositories.Interfaces;
 using InternetShop.Services.Interfaces;
 
 namespace InternetShop.Services
 {
     public class ProductService: IProductService
     {
-        private readonly IProductRepository repository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductRepository _productRepository;
 
-        public ProductService(IProductRepository repository)
+        public ProductService(
+            ICategoryRepository categoryRepository,
+            IProductRepository productRepository)
         {
-            this.repository = repository;
+            _categoryRepository = categoryRepository;
+            _productRepository = productRepository;
         }
-        public async Task Add(Product product)
+        public async Task<ResponseProductDto> Add(CreateProductDto dto)
         {
-            await repository.Add(product);
+            var category = await _categoryRepository.GetById(dto.CategoryId);
+
+            var product = new Product
+            {
+                Name = dto.Name,
+                Price = dto.Price,
+                Stock = dto.Stock,
+                CategoryId = dto.CategoryId
+            };
+
+            await _productRepository.Add(product);
+
+            var response = new ResponseProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                CategoryId = product.CategoryId,
+                CategoryName = product.CategoryName
+            };
+
+            return response;
         }
 
-        public async Task<IEnumerable<Product>> GetAll()
+        public async Task<IEnumerable<ResponseProductDto>> GetAll()
         {
-            return await repository.GetAll();
+            var products = await _productRepository.GetAll();
+
+            var response = new List<ResponseProductDto>();
+
+            foreach(var product in products)
+            {
+                response.Add(new ResponseProductDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    Stock = product.Stock,
+                    CategoryId = product.CategoryId,
+                    CategoryName = product.CategoryName
+                });
+            }
+
+            return response;
         }
 
-        public async Task<Product> GetById(int id)
+        public async Task<ResponseProductDto> GetById(int id)
         {
-            return await repository.GetById(id);
+            var product = await _productRepository.GetById(id);
+
+            var category = await _categoryRepository.GetById(product.CategoryId);
+
+            var response = new ResponseProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                CategoryId = product.CategoryId,
+                CategoryName = product.CategoryName
+            };
+            return response;
         }
 
         public async Task Remove(int id)
         {
-            await repository.Remove(id);
+            await _productRepository.Remove(id);
         }
-        public async Task Update(int id, Product product)
+        public async Task<ResponseProductDto> Update(int id, UpdateProductDto dto)
         {
-            await repository.Update(id, product);   
+            var category = await _categoryRepository.GetById(dto.CategoryId);
+
+            var product = new Product
+            {
+                Name = dto.Name,
+                Price = dto.Price,
+                Stock = dto.Stock,
+                CategoryId = dto.CategoryId
+            };
+            await _productRepository.Update(id, product);   
+
+            var response = new ResponseProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                CategoryId = product.CategoryId,
+                CategoryName = product.CategoryName
+            };
+
+            return response;
         }
     }
 }

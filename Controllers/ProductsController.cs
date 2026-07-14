@@ -2,6 +2,7 @@
 using InternetShop.DTOs;
 using InternetShop.DTOs.Products;
 using InternetShop.Models;
+using InternetShop.Repositories.Interfaces;
 using InternetShop.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,72 +12,47 @@ namespace InternetShop.Controllers
     [ApiController]
     public class ProductsController: ControllerBase
     {
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IProductService _service;
 
         public ProductsController(
+            ICategoryRepository categoryRepository,
             IProductService service)
         {
+            _categoryRepository = categoryRepository;
             _service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _service.GetAll();
-            return Ok(result);
+            var response = await _service.GetAll();
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var result = await _service.GetById(id);
-            return Ok(result);
+            var response = await _service.GetById(id);
+            return Ok(response);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(CreateProductDto dto)
         {
-            var product = new Product
-            {
-                Name = dto.Name,
-                Price = dto.Price,
-                Stock = dto.Stock
-            };
+            var category = await _categoryRepository.GetById(dto.CategoryId);
 
-            await _service.Add(product);
-
-            var response = new ResponseProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock
-            };
+            var response = await _service.Add(dto);
 
             return CreatedAtAction(
                 nameof(Get),
-                new { id = product.Id },
+                new { id = response.Id },
                 response);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, UpdateProductDto dto)
         {
-            var product = new Product
-            {
-                Name = dto.Name,
-                Price = dto.Price,
-                Stock = dto.Stock
-            };
-
-            await _service.Update(id, product);
-
-            var response = new ResponseProductDto
-            {
-                Id = id,
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock
-            };
+            var response = await _service.Update(id, dto);
 
             return Ok(
                 response);

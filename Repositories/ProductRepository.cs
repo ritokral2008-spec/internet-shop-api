@@ -2,6 +2,7 @@
 using InternetShop.Exceptions;
 using InternetShop.Data;
 using Microsoft.EntityFrameworkCore;
+using InternetShop.Repositories.Interfaces;
 
 namespace InternetShop.Repositories
 {
@@ -22,12 +23,16 @@ namespace InternetShop.Repositories
 
         public async Task<IEnumerable<Product>> GetAll()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products
+                .Include(p => p.Category)
+                .ToListAsync();
         }
 
         public async Task<Product> GetById(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if(product == null)
                 throw new ProductNotFoundException("Товар не найден");
@@ -56,6 +61,8 @@ namespace InternetShop.Repositories
             existing.Name = product.Name;
             existing.Price = product.Price;
             existing.Stock = product.Stock;
+            existing.CategoryId = product.CategoryId;
+            existing.CategoryName = product.CategoryName;
 
             await _context.SaveChangesAsync();
         }

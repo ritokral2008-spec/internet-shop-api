@@ -1,8 +1,8 @@
-﻿using InternetShop.Repositories;
-using InternetShop.Models;
+﻿using InternetShop.Models;
 using InternetShop.Exceptions;
 using InternetShop.Services.Interfaces;
 using InternetShop.Data;
+using InternetShop.Repositories.Interfaces;
 
 namespace InternetShop.Services
 {
