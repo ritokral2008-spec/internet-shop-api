@@ -51,7 +51,7 @@ namespace InternetShop.Repositories
 
             await _context.SaveChangesAsync();
         }
-        public async Task Update(int id, Product product)
+        public async Task<Product> Update(int id, Product product)
         {
             var existing = await _context.Products.FindAsync(id);
 
@@ -65,6 +65,8 @@ namespace InternetShop.Repositories
             existing.CategoryName = product.CategoryName;
 
             await _context.SaveChangesAsync();
+
+            return existing;
         }
     }
 }

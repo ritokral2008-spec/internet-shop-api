@@ -8,6 +8,6 @@ namespace InternetShop.Repositories.Interfaces
         Task<Product> GetById(int id);
         Task Remove(int id);
         Task<IEnumerable<Product>> GetAll();
-        Task Update(int id, Product product);
+        Task<Product> Update(int id, Product product);
     }
 }

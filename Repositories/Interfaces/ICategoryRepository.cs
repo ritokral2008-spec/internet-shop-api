@@ -7,7 +7,7 @@ namespace InternetShop.Repositories.Interfaces
         Task Add(Category category);
         Task<IEnumerable<Category>> GetAll();
         Task<Category> GetById(int id);
-        Task Update(int id, Category category);
+        Task<Category> Update(int id, Category category);
         Task Remove(int id);
     }
 }

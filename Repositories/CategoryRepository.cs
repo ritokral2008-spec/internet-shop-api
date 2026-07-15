@@ -23,12 +23,14 @@ namespace InternetShop.Repositories
         public async Task<IEnumerable<Category>> GetAll()
         {
             return _context.Categories
+                .Include(p => p.Products)
                 .ToList();
         }
 
         public async Task<Category> GetById(int id)
         {
             var category = await _context.Categories
+                .Include(p => p.Products)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if(category == null)
@@ -38,7 +40,7 @@ namespace InternetShop.Repositories
 
             return category;
         }
-        public async Task Update(int id, Category category)
+        public async Task<Category> Update(int id, Category category)
         {
             var existing = await _context.Categories.FindAsync(id);
 
@@ -48,6 +50,8 @@ namespace InternetShop.Repositories
             existing.Name = category.Name;
 
             await _context.SaveChangesAsync();
+
+            return existing;
         }
 
         public async Task Remove(int id)

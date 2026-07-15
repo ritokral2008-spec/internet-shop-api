@@ -2,6 +2,7 @@
 using InternetShop.Models;
 using InternetShop.Repositories.Interfaces;
 using InternetShop.Services.Interfaces;
+using InternetShop.Mappers;
 
 namespace InternetShop.Services
 {
@@ -21,11 +22,7 @@ namespace InternetShop.Services
             };
             await _repository.Add(category);
 
-            return new ResponseCategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name
-            };
+            return CategoryMapper.ToDto(category);
         }
 
         public async Task<IEnumerable<ResponseCategoryDto>> GetAll()
@@ -35,11 +32,7 @@ namespace InternetShop.Services
             var response = new List<ResponseCategoryDto>();
             foreach(var category in categories)
             {
-                response.Add(new ResponseCategoryDto
-                {
-                    Id = category.Id,
-                    Name = category.Name
-                });
+                response.Add(CategoryMapper.ToDto(category));
             }
 
             return response;
@@ -49,11 +42,7 @@ namespace InternetShop.Services
         {
             var category = await _repository.GetById(id);
 
-            return new ResponseCategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name
-            };
+            return CategoryMapper.ToDto(category);
         }
 
         public async Task<ResponseCategoryDto> Update(int id, UpdateCategoryDto dto)
@@ -65,11 +54,7 @@ namespace InternetShop.Services
             };
             await _repository.Update(id, category);
 
-            return new ResponseCategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name
-            };
+            return CategoryMapper.ToDto(category);
         }
         public async Task Remove(int id)
         {

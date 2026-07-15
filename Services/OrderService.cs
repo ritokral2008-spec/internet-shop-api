@@ -4,6 +4,7 @@ using InternetShop.Services.Interfaces;
 using InternetShop.DTOs.Orders;
 using InternetShop.Repositories.Interfaces;
 using InternetShop.DTOs.OrderItems;
+using InternetShop.Mappers;
 
 namespace InternetShop.Services
 {
@@ -32,7 +33,7 @@ namespace InternetShop.Services
             //Order
             var order = new Order();
 
-            foreach(var item in order.Items)
+            foreach(var item in dto.Items)
             {
                 var product = await _productRepository.GetById(item.ProductId);
 
@@ -46,54 +47,25 @@ namespace InternetShop.Services
             }
 
             //Response
-            var response = new ResponseOrderDto();
-
-            foreach(var item in dto.Items)
-            {
-                var product = await _productRepository.GetById(item.ProductId);
-
-                response.Items.Add(new ResponseOrderItemDto
-                {
-                    ProductId = product.Id,
-                    ProductName = product.Name,
-                    Quantity = item.Quantity,
-                    UnitPrice = product.Price
-                });
-            }
-            response.TotalPrice = response.Items.Sum(i => i.UnitPrice * i.Quantity);
 
             await _orderRepository.Add(order);
 
             OrderCreated?.Invoke(order);
 
-            return response;
+            return OrderMapper.ToDto(order);
         }
 
         public async Task<IEnumerable<ResponseOrderDto>> GetAll()
         {
             var orders = await _orderRepository.GetAll();
 
-            var response = new ResponseOrderDto();
+            
 
             var responses = new List<ResponseOrderDto>();
 
-            foreach(var item in orders)
+            foreach(var order in orders)
             {
-                response.Id = item.Id;
-                response.TotalPrice = item.TotalPrice;
-                response.Status = item.Status;
-
-                foreach(var orderItem in item.Items) 
-                {
-                    response.Items.Add(new ResponseOrderItemDto
-                    {
-                        ProductId = orderItem.ProductId,
-                        ProductName = orderItem.ProductName,
-                        UnitPrice = orderItem.UnitPrice,
-                        Quantity = orderItem.Quantity
-                    });
-                }
-                responses.Add(response);
+                responses.Add(OrderMapper.ToDto(order));
             }
 
             return responses;
@@ -103,24 +75,7 @@ namespace InternetShop.Services
         {
             var order = await _orderRepository.GetById(id);
 
-            var response = new ResponseOrderDto();
-
-            response.Status = order.Status;
-            response.Id = order.Id;
-            response.TotalPrice = order.TotalPrice;
-
-            foreach(var item in order.Items)
-            {
-                response.Items.Add(new ResponseOrderItemDto
-                {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice,
-                    Quantity = item.Quantity
-                });
-            }
-
-            return response;
+            return OrderMapper.ToDto(order);
         }
         public async Task<ResponseOrderDto> Update(int id, UpdateOrderDto dto)
         {
@@ -152,24 +107,8 @@ namespace InternetShop.Services
             await _orderRepository.Update(order);
 
             //Response
-            var response = new ResponseOrderDto();
 
-            response.Id = order.Id;
-            response.Status = order.Status;
-            response.TotalPrice = order.TotalPrice;
-
-            foreach(var item in order.Items)
-            {
-                response.Items.Add(new ResponseOrderItemDto
-                {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice,
-                    Quantity = item.Quantity
-                });
-            }
-
-            return response;
+            return OrderMapper.ToDto(order);
 
         }
 

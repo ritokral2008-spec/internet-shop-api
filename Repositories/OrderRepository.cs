@@ -52,10 +52,12 @@ namespace InternetShop.Repositories
 
             await _context.SaveChangesAsync();
         }
-        public async Task Update(Order order)
+        public async Task<Order> Update(Order order)
         {
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
+
+            return order;
         }
     }
 }

@@ -2,6 +2,8 @@
 using InternetShop.Models;
 using InternetShop.Repositories.Interfaces;
 using InternetShop.Services.Interfaces;
+using InternetShop.Mappers;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace InternetShop.Services
 {
@@ -19,7 +21,7 @@ namespace InternetShop.Services
         }
         public async Task<ResponseProductDto> Add(CreateProductDto dto)
         {
-            var category = await _categoryRepository.GetById(dto.CategoryId);
+            await _categoryRepository.GetById(dto.CategoryId);
 
             var product = new Product
             {
@@ -31,17 +33,7 @@ namespace InternetShop.Services
 
             await _productRepository.Add(product);
 
-            var response = new ResponseProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock,
-                CategoryId = product.CategoryId,
-                CategoryName = product.CategoryName
-            };
-
-            return response;
+            return ProductMapper.ToDto(product);
         }
 
         public async Task<IEnumerable<ResponseProductDto>> GetAll()
@@ -52,15 +44,7 @@ namespace InternetShop.Services
 
             foreach(var product in products)
             {
-                response.Add(new ResponseProductDto
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Price = product.Price,
-                    Stock = product.Stock,
-                    CategoryId = product.CategoryId,
-                    CategoryName = product.CategoryName
-                });
+                response.Add(ProductMapper.ToDto(product));
             }
 
             return response;
@@ -70,18 +54,7 @@ namespace InternetShop.Services
         {
             var product = await _productRepository.GetById(id);
 
-            var category = await _categoryRepository.GetById(product.CategoryId);
-
-            var response = new ResponseProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock,
-                CategoryId = product.CategoryId,
-                CategoryName = product.CategoryName
-            };
-            return response;
+            return ProductMapper.ToDto(product);
         }
 
         public async Task Remove(int id)
@@ -90,7 +63,7 @@ namespace InternetShop.Services
         }
         public async Task<ResponseProductDto> Update(int id, UpdateProductDto dto)
         {
-            var category = await _categoryRepository.GetById(dto.CategoryId);
+            await _categoryRepository.GetById(dto.CategoryId);
 
             var product = new Product
             {
@@ -99,19 +72,9 @@ namespace InternetShop.Services
                 Stock = dto.Stock,
                 CategoryId = dto.CategoryId
             };
-            await _productRepository.Update(id, product);   
+            var updated = await _productRepository.Update(id, product);
 
-            var response = new ResponseProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock,
-                CategoryId = product.CategoryId,
-                CategoryName = product.CategoryName
-            };
-
-            return response;
+            return ProductMapper.ToDto(product);
         }
     }
 }
