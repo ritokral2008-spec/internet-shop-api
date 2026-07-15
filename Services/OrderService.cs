@@ -59,16 +59,9 @@ namespace InternetShop.Services
         {
             var orders = await _orderRepository.GetAll();
 
-            
-
-            var responses = new List<ResponseOrderDto>();
-
-            foreach(var order in orders)
-            {
-                responses.Add(OrderMapper.ToDto(order));
-            }
-
-            return responses;
+            return orders
+                .Select(OrderMapper.ToDto)
+                .ToList();
         }
 
         public async Task<ResponseOrderDto> GetById(int id)
@@ -82,8 +75,6 @@ namespace InternetShop.Services
             var order = await _orderRepository.GetById(id);
 
             order.Items.Clear();
-
-            decimal totalPrice = 0;
 
             foreach(var item in dto.Items)
             {
@@ -100,9 +91,9 @@ namespace InternetShop.Services
 
                 order.Items.Add(orderItem);
 
-                totalPrice += product.Price * item.Quantity;
             }
-            order.TotalPrice = totalPrice;
+            order.TotalPrice =
+                order.Items.Sum(i => i.UnitPrice * i.Quantity);
 
             await _orderRepository.Update(order);
 

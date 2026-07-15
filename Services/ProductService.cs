@@ -40,14 +40,9 @@ namespace InternetShop.Services
         {
             var products = await _productRepository.GetAll();
 
-            var response = new List<ResponseProductDto>();
-
-            foreach(var product in products)
-            {
-                response.Add(ProductMapper.ToDto(product));
-            }
-
-            return response;
+            return products
+                .Select(ProductMapper.ToDto)
+                .ToList();
         }
 
         public async Task<ResponseProductDto> GetById(int id)

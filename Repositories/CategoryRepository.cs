@@ -34,9 +34,8 @@ namespace InternetShop.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if(category == null)
-            {
                 throw new CategoryNotFoundException("Категория не найдена");
-            }
+            
 
             return category;
         }

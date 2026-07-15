@@ -29,13 +29,9 @@ namespace InternetShop.Services
         {
             var categories = await _repository.GetAll();
 
-            var response = new List<ResponseCategoryDto>();
-            foreach(var category in categories)
-            {
-                response.Add(CategoryMapper.ToDto(category));
-            }
-
-            return response;
+            return categories
+                .Select(CategoryMapper.ToDto)
+                .ToList();
         }
 
         public async Task<ResponseCategoryDto> GetById(int id)
@@ -52,9 +48,9 @@ namespace InternetShop.Services
                 Id = id,
                 Name = dto.Name
             };
-            await _repository.Update(id, category);
+            var updated = await _repository.Update(id, category);
 
-            return CategoryMapper.ToDto(category);
+            return CategoryMapper.ToDto(updated);
         }
         public async Task Remove(int id)
         {

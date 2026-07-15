@@ -6,6 +6,7 @@ using InternetShop.Services.Interfaces;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using InternetShop.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +44,8 @@ if(app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthorization();
 
