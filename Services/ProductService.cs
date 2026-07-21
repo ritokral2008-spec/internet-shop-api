@@ -11,13 +11,16 @@ namespace InternetShop.Services
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductRepository _productRepository;
+        private readonly ILogger<ProductService> _logger;
 
         public ProductService(
             ICategoryRepository categoryRepository,
-            IProductRepository productRepository)
+            IProductRepository productRepository,
+            ILogger<ProductService> logger)
         {
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
+            _logger = logger;
         }
         public async Task<ResponseProductDto> Add(CreateProductDto dto)
         {
@@ -31,7 +34,15 @@ namespace InternetShop.Services
                 CategoryId = dto.CategoryId
             };
 
+            _logger.LogInformation(
+                "Создание товара {Name}",
+                dto.Name);
+
             await _productRepository.Add(product);
+
+            _logger.LogInformation(
+                "Товар {Name} успешно создан",
+                product.Name);
 
             return ProductMapper.ToDto(product);
         }
@@ -40,6 +51,10 @@ namespace InternetShop.Services
         {
             var products = await _productRepository.GetAll();
 
+            _logger.LogInformation(
+                "Получено {Count} товаров",
+                products.Count());
+
             return products
                 .Select(ProductMapper.ToDto)
                 .ToList();
@@ -47,7 +62,15 @@ namespace InternetShop.Services
 
         public async Task<ResponseProductDto> GetById(int id)
         {
+            _logger.LogInformation(
+                "Получение товара {Id}",
+                id);
+
             var product = await _productRepository.GetById(id);
+
+            _logger.LogInformation(
+                "Товар {Id} успешно получен",
+                id);
 
             return ProductMapper.ToDto(product);
         }
@@ -55,6 +78,10 @@ namespace InternetShop.Services
         public async Task Remove(int id)
         {
             await _productRepository.Remove(id);
+
+            _logger.LogInformation(
+                "Удаление товара {Id}",
+                id);
         }
         public async Task<ResponseProductDto> Update(int id, UpdateProductDto dto)
         {
@@ -67,7 +94,17 @@ namespace InternetShop.Services
                 Stock = dto.Stock,
                 CategoryId = dto.CategoryId
             };
+
+            _logger.LogInformation(
+                "Обновление товара {Id}",
+                id);
+
             var updated = await _productRepository.Update(id, product);
+
+            _logger.LogInformation(
+                "Товар {Id} успешно обновлён, новое имя: {Name}",
+                id,
+                updated.Name);
 
             return ProductMapper.ToDto(product);
         }

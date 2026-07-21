@@ -1,9 +1,9 @@
 ﻿using InternetShop.Data;
 using InternetShop.DTOs;
 using InternetShop.DTOs.Products;
-using InternetShop.Models;
 using InternetShop.Repositories.Interfaces;
 using InternetShop.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternetShop.Controllers
@@ -14,13 +14,19 @@ namespace InternetShop.Controllers
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductService _service;
+        private readonly IValidator<CreateProductDto> _createValidator;
+        private readonly IValidator<UpdateProductDto> _updateValidator;
 
         public ProductsController(
             ICategoryRepository categoryRepository,
-            IProductService service)
+            IProductService service,
+            IValidator<CreateProductDto> createValidator,
+            IValidator<UpdateProductDto> updateValidator)
         {
             _categoryRepository = categoryRepository;
             _service = service;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -39,6 +45,20 @@ namespace InternetShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(CreateProductDto dto)
         {
+            var result = await _createValidator.ValidateAsync(dto);
+
+            if(!result.IsValid)
+            {
+                var errors = result.Errors
+                    .GroupBy(x => x.PropertyName)
+                    .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(x => x.ErrorMessage).ToArray());
+
+                return BadRequest(errors);
+            }
+               
+
             var category = await _categoryRepository.GetById(dto.CategoryId);
 
             var response = await _service.Add(dto);
@@ -52,6 +72,19 @@ namespace InternetShop.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, UpdateProductDto dto)
         {
+            var result = await _updateValidator.ValidateAsync(dto);
+
+            if(!result.IsValid)
+            {
+                var errors = result.Errors
+                    .GroupBy(x => x.PropertyName)
+                    .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(x => x.ErrorMessage).ToArray());
+
+                return BadRequest(errors);
+            }
+
             var response = await _service.Update(id, dto);
 
             return Ok(

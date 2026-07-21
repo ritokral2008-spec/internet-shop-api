@@ -1,12 +1,16 @@
+using FluentValidation;
 using InternetShop.Data;
+using InternetShop.DTOs.Validators.Categories;
+using InternetShop.DTOs.Validators.Orders;
+using InternetShop.DTOs.Validators.Products;
+using InternetShop.Middleware;
 using InternetShop.Repositories;
 using InternetShop.Repositories.Interfaces;
 using InternetShop.Services;
 using InternetShop.Services.Interfaces;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using System.Text.Json.Serialization;
-using InternetShop.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +26,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     .UseSnakeCaseNamingConvention());
 
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
