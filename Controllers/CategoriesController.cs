@@ -27,9 +27,9 @@ namespace InternetShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] CategoryQueryDto query)
         {
-            var response = await _service.GetAll();
+            var response = await _service.GetAll(query);
             
             return Ok(response);
         }

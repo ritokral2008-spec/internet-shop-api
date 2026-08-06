@@ -1,7 +1,5 @@
 ﻿using InternetShop.DTOs.Orders;
-using InternetShop.DTOs.OrderItems;
 using InternetShop.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
 
@@ -25,9 +23,9 @@ namespace InternetShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetOrders()
+        public async Task<IActionResult> GetOrders([FromQuery] OrderQueryDto query)
         {
-            var response = await _service.GetAll();
+            var response = await _service.GetAll(query);
 
             return Ok(response);
         }

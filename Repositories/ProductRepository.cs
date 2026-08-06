@@ -3,6 +3,7 @@ using InternetShop.Exceptions;
 using InternetShop.Data;
 using Microsoft.EntityFrameworkCore;
 using InternetShop.Repositories.Interfaces;
+using InternetShop.DTOs.Products;
 
 namespace InternetShop.Repositories
 {
@@ -21,9 +22,64 @@ namespace InternetShop.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAll()
+        public async Task<IEnumerable<Product>> GetAll(ProductQueryDto query)
         {
-            return await _context.Products
+            IQueryable<Product> products = _context.Products;
+
+            if(!string.IsNullOrWhiteSpace(query.Name))
+            {
+                products = products.Where(p =>
+                p.Name.Contains(query.Name));
+            }
+
+            if(query.CategoryId.HasValue)
+            {
+                products = products.Where(p =>
+                p.CategoryId == query.CategoryId);
+            }
+
+            if(query.MinPrice.HasValue)
+            {
+                products = products.Where(p =>
+                p.Price >= query.MinPrice);
+            }
+
+            if(query.MaxPrice.HasValue)
+            {
+                products = products.Where(p =>
+                p.Price <= query.MaxPrice);
+            }
+
+            switch(query.SortBy?.ToLower())
+            {
+                case "price":
+
+                    products = query.Descending
+                        ? products.OrderByDescending(x => x.Price)
+                        : products.OrderBy(x => x.Price);
+
+                break;
+
+                case "name":
+
+                    products = query.Descending
+                        ? products.OrderByDescending(x => x.Name)
+                        : products.OrderBy(x => x.Name);
+
+                break;
+
+                default:
+
+                    products = products.OrderBy(x => x.Id);
+
+                    break;
+            }
+
+            products = products
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize);
+
+            return await products
                 .Include(p => p.Category)
                 .ToListAsync();
         }

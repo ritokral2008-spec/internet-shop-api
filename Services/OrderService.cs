@@ -47,6 +47,9 @@ namespace InternetShop.Services
                     Quantity = item.Quantity,
                     UnitPrice = product.Price
                 });
+
+                order.TotalPrice =
+                    order.Items.Sum(i => i.Quantity * i.UnitPrice);
             }
 
             _logger.LogInformation(
@@ -64,9 +67,9 @@ namespace InternetShop.Services
             return OrderMapper.ToDto(order);
         }
 
-        public async Task<IEnumerable<ResponseOrderDto>> GetAll()
+        public async Task<IEnumerable<ResponseOrderDto>> GetAll(OrderQueryDto query)
         {
-            var orders = await _orderRepository.GetAll();
+            var orders = await _orderRepository.GetAll(query);
 
             _logger.LogInformation(
                 "Заказов получено: {Count}",

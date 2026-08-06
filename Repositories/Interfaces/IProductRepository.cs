@@ -1,4 +1,5 @@
-﻿using InternetShop.Models;
+﻿using InternetShop.DTOs.Products;
+using InternetShop.Models;
 
 namespace InternetShop.Repositories.Interfaces
 {
@@ -7,7 +8,7 @@ namespace InternetShop.Repositories.Interfaces
         Task Add(Product product);
         Task<Product> GetById(int id);
         Task Remove(int id);
-        Task<IEnumerable<Product>> GetAll();
+        Task<IEnumerable<Product>> GetAll(ProductQueryDto query);
         Task<Product> Update(int id, Product product);
     }
 }

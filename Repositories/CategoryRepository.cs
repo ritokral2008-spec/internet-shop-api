@@ -1,8 +1,9 @@
 ﻿using InternetShop.Data;
-using InternetShop.Models;
+using InternetShop.DTOs.Categories;
 using InternetShop.Exceptions;
-using Microsoft.EntityFrameworkCore;
+using InternetShop.Models;
 using InternetShop.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternetShop.Repositories
 {
@@ -20,9 +21,17 @@ namespace InternetShop.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Category>> GetAll()
+        public async Task<IEnumerable<Category>> GetAll(CategoryQueryDto query)
         {
-            return _context.Categories
+            IQueryable<Category> categories = _context.Categories;
+
+            if(!string.IsNullOrWhiteSpace(query.Name))
+            {
+                categories = categories.Where(c =>
+                c.Name.Contains(query.Name));
+            }
+
+            return categories
                 .Include(p => p.Products)
                 .ToList();
         }

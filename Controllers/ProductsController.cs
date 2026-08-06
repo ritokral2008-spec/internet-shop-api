@@ -29,9 +29,9 @@ namespace InternetShop.Controllers
             _updateValidator = updateValidator;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] ProductQueryDto query)
         {
-            var response = await _service.GetAll();
+            var response = await _service.GetAll(query);
             return Ok(response);
         }
 

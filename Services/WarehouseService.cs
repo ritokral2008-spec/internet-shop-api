@@ -9,19 +9,19 @@ namespace InternetShop.Services
     public class WarehouseService: IWarehouseService
     {
         private readonly AppDbContext _context;
-        private readonly IProductRepository productRepository;
+        private readonly IProductRepository _productRepository;
         public WarehouseService(
             AppDbContext context,
             IProductRepository productRepository)
         {
             _context = context;
-            this.productRepository = productRepository;
+            _productRepository = productRepository;
         }
         public async Task UpdateRepository(Order order)
         {
             foreach(var orderProduct in order.Items)
             {
-                var product = await productRepository.GetById(orderProduct.ProductId);
+                var product = await _productRepository.GetById(orderProduct.ProductId);
 
                 if(product == null)
                     throw new ProductNotFoundException("Товар не найден");

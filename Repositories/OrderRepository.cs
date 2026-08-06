@@ -1,4 +1,5 @@
 ﻿using InternetShop.Data;
+using InternetShop.DTOs.Orders;
 using InternetShop.Exceptions;
 using InternetShop.Models;
 using InternetShop.Repositories.Interfaces;
@@ -20,9 +21,30 @@ namespace InternetShop.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetAll()
+        public async Task<IEnumerable<Order>> GetAll(OrderQueryDto query)
         {
-            return _context.Orders
+            IQueryable<Order> orders = _context.Orders;
+
+            if(!string.IsNullOrWhiteSpace(query.Status))
+            {
+                orders = orders.Where(o =>
+                o.Status.Contains(query.Status));
+            }
+
+            if(query.MinTotalPrice.HasValue)
+            {
+                orders = orders.Where(o =>
+                o.TotalPrice >= query.MinTotalPrice);
+            }
+
+            if(query.MaxTotalPrice.HasValue)
+            {
+                orders = orders.Where(o =>
+                o.TotalPrice <= query.MaxTotalPrice);
+            }
+
+
+            return orders
                 .Include(o => o.Items)
                 .ThenInclude(i => i.Product)
                 .ToList();

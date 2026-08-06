@@ -40,9 +40,9 @@ namespace InternetShop.Services
             return CategoryMapper.ToDto(category);
         }
 
-        public async Task<IEnumerable<ResponseCategoryDto>> GetAll()
+        public async Task<IEnumerable<ResponseCategoryDto>> GetAll(CategoryQueryDto query)
         {
-            var categories = await _repository.GetAll();
+            var categories = await _repository.GetAll(query);
 
             _logger.LogInformation(
                 "Получено {Count} категорий",

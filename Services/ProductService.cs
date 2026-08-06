@@ -47,9 +47,9 @@ namespace InternetShop.Services
             return ProductMapper.ToDto(product);
         }
 
-        public async Task<IEnumerable<ResponseProductDto>> GetAll()
+        public async Task<IEnumerable<ResponseProductDto>> GetAll(ProductQueryDto query)
         {
-            var products = await _productRepository.GetAll();
+            var products = await _productRepository.GetAll(query);
 
             _logger.LogInformation(
                 "Получено {Count} товаров",

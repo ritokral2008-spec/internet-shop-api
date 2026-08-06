@@ -1,4 +1,5 @@
-﻿using InternetShop.Models;
+﻿using InternetShop.DTOs.Orders;
+using InternetShop.Models;
 
 namespace InternetShop.Repositories.Interfaces
 {
@@ -7,7 +8,7 @@ namespace InternetShop.Repositories.Interfaces
         Task Add(Order order);
         Task<Order> GetById(int id);
         Task Remove(int id);
-        Task<IEnumerable<Order>> GetAll();
+        Task<IEnumerable<Order>> GetAll(OrderQueryDto query);
         Task<Order> Update(Order order);
     }
 }
