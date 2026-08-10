@@ -62,6 +62,14 @@ namespace InternetShop.Repositories
 
             return order;
         }
+        public async Task<IEnumerable<Order>> GetByUserId(int userId)
+        {
+            return await _context.Orders
+                .Include(o => o.Items)
+                .ThenInclude(i => i.Product)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+        }
 
         public async Task Remove(int id)
         {

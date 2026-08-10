@@ -40,6 +40,7 @@ namespace InternetShop.Middleware
                 case ProductNotFoundException:
                 case CategoryNotFoundException:
                 case OrderNotFoundException:
+                case UserNotFoundException:
 
                 _logger.LogError(
                     exception,

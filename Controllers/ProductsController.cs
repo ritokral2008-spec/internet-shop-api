@@ -5,6 +5,7 @@ using InternetShop.Repositories.Interfaces;
 using InternetShop.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InternetShop.Controllers
 {
@@ -28,6 +29,8 @@ namespace InternetShop.Controllers
             _createValidator = createValidator;
             _updateValidator = updateValidator;
         }
+
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] ProductQueryDto query)
         {
@@ -35,6 +38,7 @@ namespace InternetShop.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -42,6 +46,7 @@ namespace InternetShop.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Post(CreateProductDto dto)
         {
@@ -69,6 +74,7 @@ namespace InternetShop.Controllers
                 response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, UpdateProductDto dto)
         {
@@ -91,6 +97,7 @@ namespace InternetShop.Controllers
                 response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

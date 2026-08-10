@@ -2,6 +2,7 @@
 using InternetShop.DTOs.Categories;
 using InternetShop.Models;
 using InternetShop.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
@@ -26,6 +27,7 @@ namespace InternetShop.Controllers
             _updateValidator = updateValidaor;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] CategoryQueryDto query)
         {
@@ -34,6 +36,7 @@ namespace InternetShop.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Add(CreateCategoryDto dto)
         {
@@ -58,6 +61,7 @@ namespace InternetShop.Controllers
                 response);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -65,6 +69,8 @@ namespace InternetShop.Controllers
 
             return Ok(response);
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateCategoryDto dto)
         {
@@ -86,6 +92,7 @@ namespace InternetShop.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Remove(int id)
         {

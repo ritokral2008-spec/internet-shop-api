@@ -2,8 +2,8 @@
 
 namespace InternetShop.Services.Interfaces
 {
-    public interface IWarehouseService
+    public interface IJwtService
     {
-        public Task UpdateRepository(Order order);
+        string GenerateToken(User user);
     }
 }

@@ -7,6 +7,7 @@ namespace InternetShop.Repositories.Interfaces
     {
         Task Add(Order order);
         Task<Order> GetById(int id);
+        Task<IEnumerable<Order>> GetByUserId(int userId);
         Task Remove(int id);
         Task<IEnumerable<Order>> GetAll(OrderQueryDto query);
         Task<Order> Update(Order order);

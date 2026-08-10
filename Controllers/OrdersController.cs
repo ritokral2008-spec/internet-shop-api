@@ -2,6 +2,8 @@
 using InternetShop.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace InternetShop.Controllers
 {
@@ -22,6 +24,7 @@ namespace InternetShop.Controllers
             _updateValidator = updateValidator;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetOrders([FromQuery] OrderQueryDto query)
         {
@@ -30,6 +33,20 @@ namespace InternetShop.Controllers
             return Ok(response);
         }
 
+        [Authorize]
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyOrders()
+        {
+            int userId = int.Parse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier)!
+                );
+
+            var response = await _service.GetByUserId(userId);
+
+            return Ok(response);
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateOrder(CreateOrderDto dto)
         {
@@ -46,11 +63,15 @@ namespace InternetShop.Controllers
                 return BadRequest(errors);
             }
 
-            var response = await _service.CreateOrder(dto);
+            var userId = int.Parse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var response = await _service.CreateOrder(dto, userId);
 
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -58,6 +79,8 @@ namespace InternetShop.Controllers
 
             return Ok(response);
         }
+
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateOrderDto dto)
         {
@@ -78,6 +101,8 @@ namespace InternetShop.Controllers
 
             return Ok(response);
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Remove(int id)
         {

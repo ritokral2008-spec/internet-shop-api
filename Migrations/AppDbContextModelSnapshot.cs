@@ -37,9 +37,9 @@ namespace InternetShop.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_category");
+                        .HasName("pk_categories");
 
-                    b.ToTable("category", (string)null);
+                    b.ToTable("categories", (string)null);
                 });
 
             modelBuilder.Entity("InternetShop.Models.Order", b =>
@@ -64,10 +64,17 @@ namespace InternetShop.Migrations
                         .HasColumnType("numeric")
                         .HasColumnName("total_price");
 
-                    b.HasKey("Id")
-                        .HasName("pk_order");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
 
-                    b.ToTable("order", (string)null);
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_orders_user_id");
+
+                    b.ToTable("orders", (string)null);
                 });
 
             modelBuilder.Entity("InternetShop.Models.OrderItem", b =>
@@ -101,15 +108,15 @@ namespace InternetShop.Migrations
                         .HasColumnName("unit_price");
 
                     b.HasKey("Id")
-                        .HasName("pk_order_item");
+                        .HasName("pk_order_items");
 
                     b.HasIndex("OrderId")
-                        .HasDatabaseName("ix_order_item_order_id");
+                        .HasDatabaseName("ix_order_items_order_id");
 
                     b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_order_item_product_id");
+                        .HasDatabaseName("ix_order_items_product_id");
 
-                    b.ToTable("order_item", (string)null);
+                    b.ToTable("order_items", (string)null);
                 });
 
             modelBuilder.Entity("InternetShop.Models.Product", b =>
@@ -144,12 +151,12 @@ namespace InternetShop.Migrations
                         .HasColumnName("stock");
 
                     b.HasKey("Id")
-                        .HasName("pk_product");
+                        .HasName("pk_products");
 
                     b.HasIndex("CategoryId")
-                        .HasDatabaseName("ix_product_category_id");
+                        .HasDatabaseName("ix_products_category_id");
 
-                    b.ToTable("product", (string)null);
+                    b.ToTable("products", (string)null);
                 });
 
             modelBuilder.Entity("InternetShop.Models.User", b =>
@@ -161,24 +168,42 @@ namespace InternetShop.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Age")
-                        .HasColumnType("integer")
-                        .HasColumnName("age");
-
-                    b.Property<string>("City")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("city");
+                        .HasColumnName("email");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("name");
+                        .HasColumnName("password_hash");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("role");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("username");
 
                     b.HasKey("Id")
-                        .HasName("pk_user");
+                        .HasName("pk_users");
 
-                    b.ToTable("user", (string)null);
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("InternetShop.Models.Order", b =>
+                {
+                    b.HasOne("InternetShop.Models.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_orders_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("InternetShop.Models.OrderItem", b =>
@@ -188,14 +213,14 @@ namespace InternetShop.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_order_item_order_order_id");
+                        .HasConstraintName("fk_order_items_orders_order_id");
 
                     b.HasOne("InternetShop.Models.Product", "Product")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_order_item_product_product_id");
+                        .HasConstraintName("fk_order_items_products_product_id");
 
                     b.Navigation("Order");
 
@@ -209,7 +234,7 @@ namespace InternetShop.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_product_category_category_id");
+                        .HasConstraintName("fk_products_category_category_id");
 
                     b.Navigation("Category");
                 });
@@ -227,6 +252,11 @@ namespace InternetShop.Migrations
             modelBuilder.Entity("InternetShop.Models.Product", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("InternetShop.Models.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

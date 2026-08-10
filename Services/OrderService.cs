@@ -12,30 +12,26 @@ namespace InternetShop.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
-        private readonly IWarehouseService _warehouseService;
-        private readonly IPaymentService _paymentService;
         private readonly ILogger<OrderService> _logger;
         public event Action<Order>? OrderCreated;
 
         public OrderService(
             IOrderRepository orderRepository,
             IProductRepository productRepository,
-            IWarehouseService warehouseService,
-            IPaymentService paymentService,
             ILogger<OrderService> logger)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
-            _warehouseService = warehouseService;
-            _paymentService = paymentService;
             _logger = logger;
         }
 
-        public async Task<ResponseOrderDto> CreateOrder(CreateOrderDto dto)
+        public async Task<ResponseOrderDto> CreateOrder(CreateOrderDto dto, int userId)
         {
             //Order
-            var order = new Order();
-
+            var order = new Order()
+            {
+                UserId = userId
+            };
             foreach(var item in dto.Items)
             {
                 var product = await _productRepository.GetById(item.ProductId);
@@ -94,6 +90,14 @@ namespace InternetShop.Services
 
             return OrderMapper.ToDto(order);
         }
+        public async Task<IEnumerable<ResponseOrderDto>> GetByUserId(int userId)
+        {
+            var orders = await _orderRepository.GetByUserId(userId);
+
+            return orders
+                .Select(OrderMapper.ToDto)
+                .ToList();
+        }
         public async Task<ResponseOrderDto> Update(int id, UpdateOrderDto dto)
         {
             var order = await _orderRepository.GetById(id);
@@ -141,5 +145,7 @@ namespace InternetShop.Services
                 "Удаление заказа {Id}",
                 id);
         }
+
+        
     }
 }
