@@ -62,9 +62,29 @@ namespace InternetShop.Repositories
 
             return order;
         }
-        public async Task<IEnumerable<Order>> GetByUserId(int userId)
+        public async Task<IEnumerable<Order>> GetByUserId(int userId, OrderQueryDto query)
         {
-            return await _context.Orders
+            IQueryable<Order> orders = _context.Orders;
+
+            if(!string.IsNullOrWhiteSpace(query.Status))
+            {
+                orders = orders
+                    .Where(o => o.Status.Contains(query.Status));
+            }
+
+            if(query.MinTotalPrice.HasValue)
+            {
+                orders = orders
+                    .Where(o => o.TotalPrice >= query.MinTotalPrice);
+            }
+
+            if(query.MaxTotalPrice.HasValue)
+            {
+                orders = orders
+                    .Where(o => o.TotalPrice <= query.MaxTotalPrice);
+            }
+
+            return await orders
                 .Include(o => o.Items)
                 .ThenInclude(i => i.Product)
                 .Where(x => x.UserId == userId)

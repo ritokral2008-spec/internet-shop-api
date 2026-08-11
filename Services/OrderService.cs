@@ -36,6 +36,9 @@ namespace InternetShop.Services
             {
                 var product = await _productRepository.GetById(item.ProductId);
 
+                if(product.Stock < item.Quantity)
+                    throw new NotEnoughStockException("Недостаточно товара на складе");
+
                 order.Items.Add(new OrderItem
                 {
                     ProductId = product.Id,
@@ -90,9 +93,9 @@ namespace InternetShop.Services
 
             return OrderMapper.ToDto(order);
         }
-        public async Task<IEnumerable<ResponseOrderDto>> GetByUserId(int userId)
+        public async Task<IEnumerable<ResponseOrderDto>> GetByUserId(int userId, OrderQueryDto query)
         {
-            var orders = await _orderRepository.GetByUserId(userId);
+            var orders = await _orderRepository.GetByUserId(userId, query);
 
             return orders
                 .Select(OrderMapper.ToDto)

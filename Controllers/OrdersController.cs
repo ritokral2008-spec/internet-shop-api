@@ -35,13 +35,13 @@ namespace InternetShop.Controllers
 
         [Authorize]
         [HttpGet("my")]
-        public async Task<IActionResult> GetMyOrders()
+        public async Task<IActionResult> GetMyOrders([FromQuery] OrderQueryDto query)
         {
             int userId = int.Parse(
                 User.FindFirstValue(ClaimTypes.NameIdentifier)!
                 );
 
-            var response = await _service.GetByUserId(userId);
+            var response = await _service.GetByUserId(userId, query);
 
             return Ok(response);
         }

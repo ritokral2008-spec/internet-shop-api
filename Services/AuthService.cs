@@ -26,7 +26,7 @@ namespace InternetShop.Services
                 Username = dto.Username,
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = "User"
+                Role = "Admin"
             };
 
             await _userRepository.Add(user);

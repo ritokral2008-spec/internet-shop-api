@@ -51,6 +51,17 @@ namespace InternetShop.Middleware
                     context.Response.StatusCode = StatusCodes.Status404NotFound;
                     break;
 
+                case NotEnoughStockException:
+
+                _logger.LogError(
+                    exception,
+                    "Недостаточно товара на складе при запросе {Method}, {Path}",
+                    context.Request.Method,
+                    context.Request.Path);
+
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                break;
+
                 case ValidationException:
 
                 _logger.LogError(

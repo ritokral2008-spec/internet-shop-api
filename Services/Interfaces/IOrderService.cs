@@ -8,7 +8,7 @@ namespace InternetShop.Services.Interfaces
         Task<ResponseOrderDto> CreateOrder(CreateOrderDto dto, int userId);
         Task<IEnumerable<ResponseOrderDto>> GetAll(OrderQueryDto query);
         Task<ResponseOrderDto> GetById(int id);
-        Task<IEnumerable<ResponseOrderDto>> GetByUserId(int userId);
+        Task<IEnumerable<ResponseOrderDto>> GetByUserId(int userId, OrderQueryDto query);
         Task Remove(int id);
         Task<ResponseOrderDto> Update(int id, UpdateOrderDto dto);
     }
