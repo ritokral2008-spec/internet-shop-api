@@ -12,12 +12,15 @@ namespace InternetShop.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IJwtService _jwtService;
+        private readonly ILogger<AuthService> _logger;
         public AuthService(
             IUserRepository userRepository,
-            IJwtService jwtService)
+            IJwtService jwtService,
+            ILogger<AuthService> logger)
         {
             _userRepository = userRepository;
             _jwtService = jwtService;
+            _logger = logger;
         }
         public async Task<ResponseUserDto> Register(RegisterRequestDto dto)
         {
@@ -29,7 +32,15 @@ namespace InternetShop.Services
                 Role = "Admin"
             };
 
+            _logger.LogInformation(
+                "Регистрация пользователя"
+                );
+
             await _userRepository.Add(user);
+
+            _logger.LogInformation(
+                "Пользователь успешно зарегистрирован"
+                );
 
             return new ResponseUserDto
             {
@@ -63,38 +74,6 @@ namespace InternetShop.Services
             {
                 Token = token
             };
-        }
-        public async Task<IEnumerable<ResponseUserDto>> GetAll()
-        {
-            var users = await _userRepository.GetAll();
-
-            return users
-                .Select(UserMapper.ToDto)
-                .ToList();
-        }
-
-        public async Task<ResponseUserDto> GetById(int id)
-        {
-            var user = await _userRepository.GetById(id);
-
-            return UserMapper.ToDto(user);
-        }
-        public async Task Remove(int id)
-        {
-            await _userRepository.Remove(id);
-        }
-
-        public async Task<ResponseUserDto> Update(int id, UpdateUserDto dto)
-        {
-            var user = new User
-            {
-                Username = dto.Username,
-                PasswordHash = dto.Password
-            };
-
-            var updated = await _userRepository.Update(id, user);
-
-            return UserMapper.ToDto(updated);
         }
     }
 }

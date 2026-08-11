@@ -32,14 +32,24 @@ namespace InternetShop.Services
             {
                 UserId = userId
             };
+
+            _logger.LogInformation(
+                "Создание заказа {Id}",
+                order.Id);
+
             foreach(var item in dto.Items)
             {
                 var product = await _productRepository.GetById(item.ProductId);
 
                 if(product.Stock < item.Quantity)
-                    throw new NotEnoughStockException("Недостаточно товара на складе");
+                {
+                    _logger.LogError(
+                        "Недостаточно товаров на складе для создания заказа");
 
-                order.Items.Add(new OrderItem
+                    throw new NotEnoughStockException("Недостаточно товара на складе");
+                }
+
+                    order.Items.Add(new OrderItem
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
@@ -50,10 +60,6 @@ namespace InternetShop.Services
                 order.TotalPrice =
                     order.Items.Sum(i => i.Quantity * i.UnitPrice);
             }
-
-            _logger.LogInformation(
-                "Создание заказа {Id}",
-                order.Id);
 
             await _orderRepository.Add(order);
 
@@ -68,6 +74,10 @@ namespace InternetShop.Services
 
         public async Task<IEnumerable<ResponseOrderDto>> GetAll(OrderQueryDto query)
         {
+            _logger.LogInformation(
+                "Получение заказов"
+                );
+
             var orders = await _orderRepository.GetAll(query);
 
             _logger.LogInformation(
@@ -95,7 +105,15 @@ namespace InternetShop.Services
         }
         public async Task<IEnumerable<ResponseOrderDto>> GetByUserId(int userId, OrderQueryDto query)
         {
+            _logger.LogInformation(
+                "Получение заказов {userId} пользователя",
+                userId);
+
             var orders = await _orderRepository.GetByUserId(userId, query);
+
+            _logger.LogInformation(
+                "Заказы {userId} пользователя успешно получены",
+                userId);
 
             return orders
                 .Select(OrderMapper.ToDto)
@@ -142,10 +160,14 @@ namespace InternetShop.Services
 
         public async Task Remove(int id)
         {
+            _logger.LogInformation(
+                "Удаление заказа {Id}",
+                id);
+
             await _orderRepository.Remove(id);
 
             _logger.LogInformation(
-                "Удаление заказа {Id}",
+                "Заказ {Id} успешно удалён",
                 id);
         }
 

@@ -42,6 +42,10 @@ namespace InternetShop.Services
 
         public async Task<IEnumerable<ResponseCategoryDto>> GetAll(CategoryQueryDto query)
         {
+            _logger.LogInformation(
+                "Получение категорий"
+                );
+
             var categories = await _repository.GetAll(query);
 
             _logger.LogInformation(

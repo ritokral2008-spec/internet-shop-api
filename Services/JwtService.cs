@@ -10,14 +10,22 @@ namespace InternetShop.Services
 {
     public class JwtService: IJwtService
     {
-        public readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<JwtService> _logger;
 
-        public JwtService(IConfiguration configuration)
+        public JwtService(
+            IConfiguration configuration,
+            ILogger<JwtService> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
         public string GenerateToken(User user)
         {
+            _logger.LogInformation(
+                "Создание токена"
+                );
+
             var claims = new[]
             {
                 new Claim(
@@ -47,6 +55,10 @@ namespace InternetShop.Services
                 expires: DateTime.UtcNow.AddMinutes(
                     Convert.ToInt32(_configuration["Jwt:Expires"])),
                 signingCredentials: credentials);
+
+            _logger.LogInformation(
+                "Токен успешно создан"
+                );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

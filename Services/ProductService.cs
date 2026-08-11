@@ -49,6 +49,10 @@ namespace InternetShop.Services
 
         public async Task<IEnumerable<ResponseProductDto>> GetAll(ProductQueryDto query)
         {
+            _logger.LogInformation(
+                "Получение товаров"
+                );
+
             var products = await _productRepository.GetAll(query);
 
             _logger.LogInformation(
